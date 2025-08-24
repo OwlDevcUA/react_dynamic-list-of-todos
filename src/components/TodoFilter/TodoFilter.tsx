@@ -2,14 +2,14 @@ type Props = {
   query: string;
   displayOption: string;
   onQueryChange: (query: string) => void;
-  onDisplayed: (option: string) => void;
+  onStatusChange: (option: string) => void;
 };
 
 export const TodoFilter = ({
   query,
   displayOption,
   onQueryChange,
-  onDisplayed,
+  onStatusChange,
 }: Props) => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -20,7 +20,7 @@ export const TodoFilter = ({
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
 
-    onDisplayed(value);
+    onStatusChange(value);
   };
 
   const handleClearSearch = () => {

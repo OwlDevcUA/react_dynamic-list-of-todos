@@ -13,7 +13,7 @@ import { getTodos } from './api';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState('');
-  const [displayOption, setDisplayOption] = useState('all');
+  const [status, setStatus] = useState('all');
   const [loading, setLoading] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(0);
 
@@ -35,9 +35,9 @@ export const App: React.FC = () => {
   const filteredTodos = useMemo(() => {
     let list = todos;
 
-    if (displayOption === 'active') {
+    if (status === 'active') {
       list = list.filter(todo => !todo.completed);
-    } else if (displayOption === 'completed') {
+    } else if (status === 'completed') {
       list = list.filter(todo => todo.completed);
     }
 
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
     }
 
     return list;
-  }, [displayOption, todos, query]);
+  }, [status, todos, query]);
 
   return (
     <>
@@ -61,8 +61,8 @@ export const App: React.FC = () => {
               <TodoFilter
                 query={query}
                 onQueryChange={setQuery}
-                onDisplayed={setDisplayOption}
-                displayOption={displayOption}
+                onStatusChange={setStatus}
+                displayOption={status}
               />
             </div>
 
