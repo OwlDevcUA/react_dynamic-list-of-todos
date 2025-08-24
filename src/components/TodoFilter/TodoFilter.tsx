@@ -1,34 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Todo } from '../../types/Todo';
-
 type Props = {
-  todos: Todo[];
+  query: string;
   displayOption: string;
-  onFiltred: (todos: Todo[]) => void;
+  onQueryChange: (query: string) => void;
   onDisplayed: (option: string) => void;
 };
 
 export const TodoFilter = ({
-  todos,
+  query,
   displayOption,
-  onFiltred,
+  onQueryChange,
   onDisplayed,
 }: Props) => {
-  const [query, setQuery] = useState('');
-  const filtredTodos = useMemo(() => {
-    return todos.filter(todo =>
-      todo.title.toLowerCase().includes(query.toLowerCase()),
-    );
-  }, [query, todos]);
-
-  useEffect(() => {
-    onFiltred(filtredTodos);
-  }, [filtredTodos, onFiltred]);
-
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    setQuery(value);
+    onQueryChange(value);
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -38,7 +24,7 @@ export const TodoFilter = ({
   };
 
   const handleClearSearch = () => {
-    setQuery('');
+    onQueryChange('');
   };
 
   return (

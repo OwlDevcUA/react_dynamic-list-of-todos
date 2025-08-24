@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
@@ -8,42 +8,47 @@ import { TodoFilter } from './components/TodoFilter';
 import { TodoModal } from './components/TodoModal';
 import { Loader } from './components/Loader';
 import { Todo } from './types/Todo';
-import { getActiveTodos, getComplitedTodos, getTodos } from './api';
+import { getTodos } from './api';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filtredTodos, setFiltredTodos] = useState<Todo[]>([]);
+  const [query, setQuery] = useState('');
   const [displayOption, setDisplayOption] = useState('all');
   const [loading, setLoading] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState(0);
+  const [selectedTodoId, setSelectedTodoId] = useState(0);
 
   const handleLoading = () => {
-    setLoading(false)
-  }
-
+    setLoading(false);
+  };
 
   useEffect(() => {
     setLoading(true);
-    if (displayOption === 'active') {
-      getActiveTodos().then(data => {
-          setTodos(data)
-          setFiltredTodos(data)
-      })
-      .finally(() => handleLoading())
-    } else if (displayOption === 'completed') {
-      getComplitedTodos().then(data => {
-          setTodos(data)
-          setFiltredTodos(data)
+    {
+      getTodos()
+        .then(data => {
+          setTodos(data);
         })
-        .finally(() => handleLoading())
-    } else {
-      getTodos().then(data => {
-          setTodos(data)
-          setFiltredTodos(data)
-      })
-        .finally(() => handleLoading())
+        .finally(() => handleLoading());
     }
-      }, [displayOption]);
+  }, []);
+
+  const filteredTodos = useMemo(() => {
+    let list = todos;
+
+    if (displayOption === 'active') {
+      list = list.filter(todo => !todo.completed);
+    } else if (displayOption === 'completed') {
+      list = list.filter(todo => todo.completed);
+    }
+
+    if (query.trim()) {
+      list = list.filter(todo =>
+        todo.title.toLowerCase().includes(query.toLowerCase()),
+      );
+    }
+
+    return list;
+  }, [displayOption, todos, query]);
 
   return (
     <>
@@ -53,13 +58,30 @@ export const App: React.FC = () => {
             <h1 className="title">Todos:</h1>
 
             <div className="block">
-              <TodoFilter onDisplayed={setDisplayOption} displayOption={displayOption} todos={todos} onFiltred={setFiltredTodos}/>
+              <TodoFilter
+                query={query}
+                onQueryChange={setQuery}
+                onDisplayed={setDisplayOption}
+                displayOption={displayOption}
+              />
             </div>
 
             <div className="block">
               {loading && <Loader />}
-              <TodoList todos={filtredTodos} onSelected={setSelectedTodo} selectedTodo={selectedTodo}/>
-              {selectedTodo > 0 && <TodoModal todos={todos} selectedTodo={selectedTodo} onClose={setSelectedTodo}/>}
+              {!loading && (
+                <TodoList
+                  todos={filteredTodos}
+                  onTodoSelect={setSelectedTodoId}
+                  selectedTodo={selectedTodoId}
+                />
+              )}
+              {selectedTodoId > 0 && (
+                <TodoModal
+                  todos={todos}
+                  selectedTodo={selectedTodoId}
+                  onClose={setSelectedTodoId}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -4,12 +4,12 @@ import classNames from 'classnames';
 type Props = {
   todos: Todo[];
   selectedTodo: number;
-  onSelected: (todoId: number) => void;
+  onTodoSelect: (todoId: number) => void;
 };
 
-export const TodoList = ({ todos, selectedTodo, onSelected }: Props) => {
+export const TodoList = ({ todos, selectedTodo, onTodoSelect }: Props) => {
   const handleSelected = (id: number) => {
-    onSelected(id);
+    onTodoSelect(id);
   };
 
   return (
